@@ -19,7 +19,7 @@ Ich werde einen simplen "Space Invaders"-Klon mit Pygame entwickeln. Das ist ein
 #### Epic 1: Spieler-Bewegung
 * Als Spieler möchte ich mein Raumschiff mit Pfeiltasten/A, D nach links und rechts bewegen können, damit ich den Alien-Schüssen ausweichen kann.
     * *Arbeitspakete:*
-        - [ ]  Einrichtung des Spieler-Sprites.
+        - [x]  Einrichtung des Spieler-Sprites.
         - [ ]  Implementierung der horizontalen Bewegung.
         - [ ]  Begrenzung der Bewegung im Fenster.
         - [ ]  Erstellung der Spieler-Klasse.
