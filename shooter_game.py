@@ -42,7 +42,26 @@ class Player:
         pygame.draw.rect(screen, self.color, (self.x, self.y, self.width, self.height))
 
 
-# Spieler erstellen
+class Bullet:
+    def __init__(self, x, y):
+        super().__init__
+        self.image = pygame.Surface([4,15])
+        self.image.fill(RED)
+
+        self.rect = self.image.get_rect()
+        self.rect.centerx = x
+        self.rect.bottom = y
+
+        self.speed = 10
+
+    def update(self):
+        self.rect.y -= self.speed
+
+        if self.rect.bottom < 0:
+            self.kill() 
+
+
+
 player_width = 50
 player_height = 40
 player_speed = 5
@@ -58,13 +77,12 @@ while running:
         if event.type == pygame.QUIT:
             running = False
     
-    # Tastatureingaben abrufen
+    
     keys = pygame.key.get_pressed()
     player.move(keys)
       
     SCREEN.fill(BLACK) 
 
-    # Spieler zeichnen
     player.draw(SCREEN)
 
     pygame.display.flip()

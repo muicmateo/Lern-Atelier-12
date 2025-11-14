@@ -27,7 +27,7 @@ Ich werde einen simplen "Space Invaders"-Klon mit Pygame entwickeln. Das ist ein
 #### Epic 2: Schuss-Funktion
 * Als Spieler möchte ich mit der Leertaste Schüsse abfeuern können, damit ich die feindlichen Aliens treffen und zerstören kann.
     * *Arbeitspakete:*
-        - [ ]  Erstellung der Bullet-Klasse für Schuss-Objekte.
+        - [x]  Erstellung der Bullet-Klasse für Schuss-Objekte.
         - [ ]  Implementierung der Schuss-Bewegung nach oben.
         - [ ]  Registrierung der Leertaste für das Abfeuern von Schüssen.
         - [ ]  Entfernung von Schüssen, die den Bildschirm verlassen.
