@@ -28,9 +28,9 @@ Ich werde einen simplen "Space Invaders"-Klon mit Pygame entwickeln. Das ist ein
 * Als Spieler möchte ich mit der Leertaste Schüsse abfeuern können, damit ich die feindlichen Aliens treffen und zerstören kann.
     * *Arbeitspakete:*
         - [x]  Erstellung der Bullet-Klasse für Schuss-Objekte.
-        - [ ]  Implementierung der Schuss-Bewegung nach oben.
-        - [ ]  Registrierung der Leertaste für das Abfeuern von Schüssen.
-        - [ ]  Entfernung von Schüssen, die den Bildschirm verlassen.
+        - [x]  Implementierung der Schuss-Bewegung nach oben.
+        - [x]  Registrierung der Leertaste für das Abfeuern von Schüssen.
+        - [x]  Entfernung von Schüssen, die den Bildschirm verlassen.
 
 
 #### Epic 3: Alien-Gruppe

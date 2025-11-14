@@ -5,6 +5,7 @@ pygame.init()
 
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
+YELLOW = (255, 255, 0)
 
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
@@ -40,27 +41,38 @@ class Player:
     def draw(self, screen):
         """Zeichnet den Spieler auf dem Bildschirm"""
         pygame.draw.rect(screen, self.color, (self.x, self.y, self.width, self.height))
+    
+    def shoot(self):
+        """Erstellt einen neuen Schuss in der Mitte des Spielers"""
+        bullet_x = self.x + self.width // 2 - 2
+        bullet_y = self.y
+        return Bullet(bullet_x, bullet_y)
 
 
 class Bullet:
     def __init__(self, x, y):
-        super().__init__
-        self.image = pygame.Surface([4,15])
-        self.image.fill(RED)
-
-        self.rect = self.image.get_rect()
-        self.rect.centerx = x
-        self.rect.bottom = y
-
+        self.x = x
+        self.y = y
+        self.width = 4
+        self.height = 15
         self.speed = 10
+        self.color = YELLOW
 
     def update(self):
-        self.rect.y -= self.speed
+        """Bewegung des Schusses nach oben"""
+        self.y -= self.speed
 
-        if self.rect.bottom < 0:
-            self.kill() 
+    def draw(self, screen):
+        """Zeichnet den Schuss auf dem Bildschirm"""
+        pygame.draw.rect(screen, self.color, (self.x, self.y, self.width, self.height))
+    
+    def is_off_screen(self):
+        """Prüft, ob der Schuss den Bildschirm verlassen hat"""
+        return self.y + self.height < 0 
 
 
+# Liste für alle Schüsse
+bullets = []
 
 player_width = 50
 player_height = 40
@@ -76,14 +88,31 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        # Schuss abfeuern bei Leertaste
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE:
+                bullet = player.shoot()
+                bullets.append(bullet)
     
-    
+    # Tastatureingaben für Bewegung
     keys = pygame.key.get_pressed()
     player.move(keys)
+    
+    # Aktualisiere alle Schüsse
+    for bullet in bullets:
+        bullet.update()
+    
+    # Entferne Schüsse, die den Bildschirm verlassen haben
+    bullets = [bullet for bullet in bullets if not bullet.is_off_screen()]
       
     SCREEN.fill(BLACK) 
 
+    # Zeichne Spieler
     player.draw(SCREEN)
+    
+    # Zeichne alle Schüsse
+    for bullet in bullets:
+        bullet.draw(SCREEN)
 
     pygame.display.flip()
 
