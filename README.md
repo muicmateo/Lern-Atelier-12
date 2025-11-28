@@ -44,6 +44,11 @@ Ich werde einen simplen "Space Invaders"-Klon mit Pygame entwickeln. Das ist ein
 
 #### Epic 4: Treffer-Logik 
 * Als System möchte ich erkennen, wenn ein Spieler-Schuss einen Alien trifft, damit der Alien verschwindet und ich Punkte bekomme.
+    * *Arbeitspakete:*
+        - [ ]  Implementierung der Kollisionserkennung zwischen Bullets und Aliens.
+        - [ ]  Entfernung getroffener Aliens aus der Alien-Liste.
+        - [ ]  Entfernung des Schusses nach Treffer.
+        - [ ]  Einführung eines Punktesystems und Erhöhung bei Alien-Treffer.
 
 
 #### Epic 5: HUD 

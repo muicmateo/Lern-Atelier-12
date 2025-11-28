@@ -69,7 +69,11 @@ class Bullet:
     
     def is_off_screen(self):
         """Prüft, ob der Schuss den Bildschirm verlassen hat"""
-        return self.y + self.height < 0 
+        return self.y + self.height < 0
+    
+    def get_rect(self):
+        """Gibt das Rechteck des Schusses für Kollisionserkennung zurück"""
+        return pygame.Rect(self.x, self.y, self.width, self.height)
 
 
 class Alien:
@@ -99,6 +103,10 @@ class Alien:
         """Lässt den Alien absinken und kehrt die Richtung um"""
         self.y += pixels
         self.direction *= -1
+    
+    def get_rect(self):
+        """Gibt das Rechteck des Aliens für Kollisionserkennung zurück"""
+        return pygame.Rect(self.x, self.y, self.width, self.height)
 
 
 def create_alien_fleet(rows, cols, start_x, start_y, h_spacing, v_spacing):
@@ -131,45 +139,52 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        # Schuss abfeuern bei Leertaste
+        
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
                 bullet = player.shoot()
                 bullets.append(bullet)
     
-    # Tastatureingaben für Bewegung
+    
     keys = pygame.key.get_pressed()
     player.move(keys)
     
-    # Aktualisiere alle Schüsse
+   
     for bullet in bullets:
         bullet.update()
     
-    # Entferne Schüsse, die den Bildschirm verlassen haben
+    
     bullets = [bullet for bullet in bullets if not bullet.is_off_screen()]
     
-    # Aktualisiere alle Aliens und prüfe auf Bildschirmrand
+    
     edge_hit = False
     for alien in aliens:
         alien.update()
         if alien.check_edges():
             edge_hit = True
     
-    # Wenn ein Alien den Rand erreicht hat, alle absinken lassen
+   
     if edge_hit:
         for alien in aliens:
             alien.drop_down()
+    
+  
+    for bullet in bullets[:]:
+        for alien in aliens[:]:
+            if bullet.get_rect().colliderect(alien.get_rect()):
+                # Treffer erkannt - wird in nächsten Arbeitspaketen behandelt
+                pass
       
     SCREEN.fill(BLACK) 
 
-    # Zeichne Spieler
+   
     player.draw(SCREEN)
     
-    # Zeichne alle Schüsse
+    
     for bullet in bullets:
         bullet.draw(SCREEN)
 
-    # Zeichne alle Aliens
+    
     for alien in aliens:
         alien.draw(SCREEN)
 
