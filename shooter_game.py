@@ -6,6 +6,7 @@ pygame.init()
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 YELLOW = (255, 255, 0)
+GREEN = (0, 255, 0)
 
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
@@ -71,8 +72,50 @@ class Bullet:
         return self.y + self.height < 0 
 
 
-# Liste für alle Schüsse
+class Alien:
+    """Ein einfacher Alien mit horizontaler Bewegung"""
+    def __init__(self, x, y, width=40, height=30, color=GREEN, speed=2):
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.color = color
+        self.speed = speed
+        self.direction = 1  
+
+    def update(self):
+        """Bewegt den Alien horizontal"""
+        self.x += self.speed * self.direction
+
+    def draw(self, screen):
+        """Zeichnet den Alien auf dem Bildschirm"""
+        pygame.draw.rect(screen, self.color, (self.x, self.y, self.width, self.height))
+
+    def check_edges(self):
+        """Gibt True zurück, wenn der Alien eine Bildschirmkante erreicht hat"""
+        return self.x + self.width >= SCREEN_WIDTH or self.x <= 0
+
+    def drop_down(self, pixels=20):
+        """Lässt den Alien absinken und kehrt die Richtung um"""
+        self.y += pixels
+        self.direction *= -1
+
+
+def create_alien_fleet(rows, cols, start_x, start_y, h_spacing, v_spacing):
+    """Erzeugt eine Liste mit einer Matrix von Aliens"""
+    aliens = []
+    for r in range(rows):
+        for c in range(cols):
+            x = start_x + c * h_spacing
+            y = start_y + r * v_spacing
+            aliens.append(Alien(x, y))
+    return aliens
+
+
 bullets = []
+
+
+aliens = create_alien_fleet(rows=3, cols=8, start_x=50, start_y=50, h_spacing=80, v_spacing=60)
 
 player_width = 50
 player_height = 40
@@ -104,6 +147,18 @@ while running:
     
     # Entferne Schüsse, die den Bildschirm verlassen haben
     bullets = [bullet for bullet in bullets if not bullet.is_off_screen()]
+    
+    # Aktualisiere alle Aliens und prüfe auf Bildschirmrand
+    edge_hit = False
+    for alien in aliens:
+        alien.update()
+        if alien.check_edges():
+            edge_hit = True
+    
+    # Wenn ein Alien den Rand erreicht hat, alle absinken lassen
+    if edge_hit:
+        for alien in aliens:
+            alien.drop_down()
       
     SCREEN.fill(BLACK) 
 
@@ -113,6 +168,10 @@ while running:
     # Zeichne alle Schüsse
     for bullet in bullets:
         bullet.draw(SCREEN)
+
+    # Zeichne alle Aliens
+    for alien in aliens:
+        alien.draw(SCREEN)
 
     pygame.display.flip()
 

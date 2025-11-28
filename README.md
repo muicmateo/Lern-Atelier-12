@@ -37,9 +37,9 @@ Ich werde einen simplen "Space Invaders"-Klon mit Pygame entwickeln. Das ist ein
 * Als System sollen mehrere Aliens in einer Gruppe oben auf dem Bildschirm erscheinen und sich hin und her bewegen, damit eine Bedrohung entsteht.
     * *Arbeitspakete:*
         - [x]  Erstellung der Alien-Klasse.
-        - [ ]  Generierung einer Alien-Gruppe in Reihen und Spalten.
-        - [ ]  Implementierung der horizontalen Alien-Bewegung.
-        - [ ]  Richtungswechsel und Abwärtsbewegung bei Bildschirmrand.
+        - [x]  Generierung einer Alien-Gruppe in Reihen und Spalten.
+        - [x]  Implementierung der horizontalen Alien-Bewegung.
+        - [x]  Richtungswechsel und Abwärtsbewegung bei Bildschirmrand.
 
 
 #### Epic 4: Treffer-Logik 
