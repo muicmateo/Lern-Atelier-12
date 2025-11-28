@@ -169,11 +169,14 @@ while running:
             alien.drop_down()
     
   
+    
     for bullet in bullets[:]:
         for alien in aliens[:]:
             if bullet.get_rect().colliderect(alien.get_rect()):
-                # Treffer erkannt - wird in nächsten Arbeitspaketen behandelt
-                pass
+                
+                aliens.remove(alien)
+                
+                break
       
     SCREEN.fill(BLACK) 
 
