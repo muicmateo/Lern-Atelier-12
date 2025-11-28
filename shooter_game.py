@@ -120,10 +120,14 @@ def create_alien_fleet(rows, cols, start_x, start_y, h_spacing, v_spacing):
     return aliens
 
 
+# Liste für alle Schüsse
 bullets = []
 
-
+# Erstelle Alien-Fleet (3 Reihen, 8 Spalten)
 aliens = create_alien_fleet(rows=3, cols=8, start_x=50, start_y=50, h_spacing=80, v_spacing=60)
+
+# Punktesystem
+score = 0
 
 player_width = 50
 player_height = 40
@@ -170,12 +174,16 @@ while running:
     
   
     
+    # Kollisionserkennung zwischen Bullets und Aliens
     for bullet in bullets[:]:
         for alien in aliens[:]:
             if bullet.get_rect().colliderect(alien.get_rect()):
-                
+                # Alien entfernen
                 aliens.remove(alien)
-                
+                # Schuss entfernen
+                bullets.remove(bullet)
+                # Punkte erhöhen
+                score += 10
                 break
       
     SCREEN.fill(BLACK) 
@@ -190,6 +198,11 @@ while running:
     
     for alien in aliens:
         alien.draw(SCREEN)
+    
+    # Punkte anzeigen
+    font = pygame.font.Font(None, 36)
+    score_text = font.render(f"Score: {score}", True, (255, 255, 255))
+    SCREEN.blit(score_text, (10, 10))
 
     pygame.display.flip()
 

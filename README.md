@@ -47,8 +47,8 @@ Ich werde einen simplen "Space Invaders"-Klon mit Pygame entwickeln. Das ist ein
     * *Arbeitspakete:*
         - [x]  Implementierung der Kollisionserkennung zwischen Bullets und Aliens.
         - [x]  Entfernung getroffener Aliens aus der Alien-Liste.
-        - [ ]  Entfernung des Schusses nach Treffer.
-        - [ ]  Einführung eines Punktesystems und Erhöhung bei Alien-Treffer.
+        - [x]  Entfernung des Schusses nach Treffer.
+        - [x]  Einführung eines Punktesystems und Erhöhung bei Alien-Treffer.
 
 
 #### Epic 5: HUD 
