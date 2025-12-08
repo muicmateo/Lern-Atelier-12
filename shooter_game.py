@@ -7,6 +7,7 @@ BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 YELLOW = (255, 255, 0)
 GREEN = (0, 255, 0)
+WHITE = (255, 255, 255)
 
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
@@ -16,15 +17,19 @@ pygame.display.set_caption("Space-Invaders")
 clock = pygame.time.Clock()
 FPS = 60
 
+# Font für HUD
+font = pygame.font.Font(None, 36)
+
 
 class Player:
-    def __init__(self, x, y, width, height, speed, color):
+    def __init__(self, x, y, width, height, speed, color, lives=3):
         self.x = x
         self.y = y
         self.width = width
         self.height = height
         self.speed = speed
         self.color = color
+        self.lives = lives
     
     def move(self, keys):
         """Horizontale Bewegung mit Begrenzung im Fenster"""
@@ -120,6 +125,28 @@ def create_alien_fleet(rows, cols, start_x, start_y, h_spacing, v_spacing):
     return aliens
 
 
+class HUD:
+    """Head-Up Display für Punktzahl und Leben"""
+    def __init__(self, font, color=WHITE):
+        self.font = font
+        self.color = color
+    
+    def draw_score(self, screen, score, x=10, y=10):
+        """Zeigt die aktuelle Punktzahl an"""
+        score_text = self.font.render(f"Score: {score}", True, self.color)
+        screen.blit(score_text, (x, y))
+    
+    def draw_lives(self, screen, lives, x=650, y=10):
+        """Zeigt die verbleibenden Leben an"""
+        lives_text = self.font.render(f"Lives: {lives}", True, self.color)
+        screen.blit(lives_text, (x, y))
+    
+    def draw(self, screen, score, lives):
+        """Zeichnet das komplette HUD am oberen Bildschirmrand"""
+        self.draw_score(screen, score)
+        self.draw_lives(screen, lives)
+
+
 # Liste für alle Schüsse
 bullets = []
 
@@ -128,6 +155,9 @@ aliens = create_alien_fleet(rows=3, cols=8, start_x=50, start_y=50, h_spacing=80
 
 # Punktesystem
 score = 0
+
+# HUD initialisieren
+hud = HUD(font)
 
 player_width = 50
 player_height = 40
@@ -199,10 +229,8 @@ while running:
     for alien in aliens:
         alien.draw(SCREEN)
     
-    # Punkte anzeigen
-    font = pygame.font.Font(None, 36)
-    score_text = font.render(f"Score: {score}", True, (255, 255, 255))
-    SCREEN.blit(score_text, (10, 10))
+    # HUD anzeigen (Punkte und Leben)
+    hud.draw(SCREEN, score, player.lives)
 
     pygame.display.flip()
 

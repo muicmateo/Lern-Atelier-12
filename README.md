@@ -53,10 +53,20 @@ Ich werde einen simplen "Space Invaders"-Klon mit Pygame entwickeln. Das ist ein
 
 #### Epic 5: HUD 
 * Als Spieler möchte ich meine aktuellen Punkte und meine verbleibenden Leben sehen, damit ich meinen Spielstand kenne.
+    * *Arbeitspakete:*
+        - [x]  Anzeige der aktuellen Punktzahl auf dem Bildschirm.
+        - [x]  Anzeige der verbleibenden Leben des Spielers.
+        - [x]  Erstellung einer Textdarstellung mit pygame.font.
+        - [x]  Positionierung des HUD am oberen Bildschirmrand.
 
 
 #### Epic 6: Alien-Gegenangriff
 * Als System sollen die Aliens ebenfalls Schüsse abgeben und diese treffen mich, damit ich eine Herausforderung habe und Leben verlieren kann.
+    * *Arbeitspakete:*
+        - [ ]  Implementierung zufälliger Alien-Schüsse.
+        - [ ]  Bewegung der Alien-Schüsse nach unten.
+        - [ ]  Kollisionserkennung zwischen Alien-Schüssen und Spieler.
+        - [ ]  Reduzierung der Spieler-Leben bei Treffer.
 
 
 #### Epic 7: Spielende und Neustart
