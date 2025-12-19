@@ -1,4 +1,35 @@
-## Pygame-Projekt 
+## Pygame Projekt:  Space Invaders Clone
+
+### 🎮 Game Übersicht
+
+Ein klassischer **Space Invaders Klon** entwickelt mit Pygame
+
+**Spielsteuerung:**
+- **← / A** und **→ / D**:  Raumschiff bewegen
+- **Leertaste**: Schiessen
+- **R**: Neustart nach Game Over
+- **Q**: Spiel beenden
+
+**Features:**
+- 🚀 Spieler Raumschiff mit Bewegung und Schussmechanik
+- 👾 Alien Gruppe mit intelligenter Formation und Bewegung
+- 💥 Kollisionserkennung zwischen Schüssen und Aliens/Spieler
+- 💯 Punktesystem und HUD (Score & Leben)
+- 🔫 Alien Gegenangriff mit zufälligen Schüssen
+- 🛡️ Unverwundbarkeits Timer nach Treffer
+- 🏆 Game Over und Victory Screens
+
+### 🔍 Interessante Code Stellen
+
+| Feature | Code Location | Beschreibung |
+|---------|--------------|--------------|
+| **Spieler Klasse** | [`Player` (Zeilen 26-71)](https://github.com/muicmateo/Lern-Atelier-12/blob/21ee44a81f6368f071ebf8f5409d6e0a28a718c2/shooter_game.py#L26-L71) | Bewegung, Schiessen, Schadensmechanik mit Invincibility Frames |
+| **Alien Klasse** | [`Alien` (Zeilen 96-120)](https://github.com/muicmateo/Lern-Atelier-12/blob/21ee44a81f6368f071ebf8f5409d6e0a28a718c2/shooter_game.py#L96-L120) | Alien Bewegung, Edge Detection und Formation Logik |
+| **Kollisionserkennung** | [Game Loop (Zeilen 246-276)](https://github.com/muicmateo/Lern-Atelier-12/blob/21ee44a81f6368f071ebf8f5409d6e0a28a718c2/shooter_game.py#L246-L276) | Bullet Alien und Alien Player Kollisionen |
+| **Bullet System** | [`Bullet` (Zeilen 74-93)](https://github.com/muicmateo/Lern-Atelier-12/blob/21ee44a81f6368f071ebf8f5409d6e0a28a718c2/shooter_game.py#L74-L93) | Schuss Logik und Bewegung |
+| **HUD System** | [`HUD` (Zeilen 155-170)](https://github.com/muicmateo/Lern-Atelier-12/blob/21ee44a81f6368f071ebf8f5409d6e0a28a718c2/shooter_game.py#L155-L170) | Score und Leben Anzeige |
+| **Main Game Loop** | [Game Loop (Zeilen 210-317)](https://github.com/muicmateo/Lern-Atelier-12/blob/21ee44a81f6368f071ebf8f5409d6e0a28a718c2/shooter_game.py#L210-L317) | Event Handling, Update Logik und Rendering |
+| **Game Over/Victory** | [Draw Functions (Zeilen 190-197)](https://github.com/muicmateo/Lern-Atelier-12/blob/21ee44a81f6368f071ebf8f5409d6e0a28a718c2/shooter_game.py#L190-L197) | End Screen Darstellung |
 
 
 ### Technologien
