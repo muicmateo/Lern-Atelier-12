@@ -1,5 +1,6 @@
 import pygame
 import sys
+import random
 
 pygame.init()
 
@@ -17,7 +18,6 @@ pygame.display.set_caption("Space-Invaders")
 clock = pygame.time.Clock()
 FPS = 60
 
-# Font für HUD
 font = pygame.font.Font(None, 36)
 
 
@@ -32,24 +32,20 @@ class Player:
         self.lives = lives
     
     def move(self, keys):
-        """Horizontale Bewegung mit Begrenzung im Fenster"""
         if keys[pygame.K_LEFT] or keys[pygame.K_a]:
             self.x -= self.speed
         if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
             self.x += self.speed
         
-        # Begrenzung der Bewegung im Fenster
         if self.x < 0:
             self.x = 0
         if self.x + self.width > SCREEN_WIDTH:
             self.x = SCREEN_WIDTH - self.width
     
     def draw(self, screen):
-        """Zeichnet den Spieler auf dem Bildschirm"""
         pygame.draw.rect(screen, self.color, (self.x, self.y, self.width, self.height))
     
     def shoot(self):
-        """Erstellt einen neuen Schuss in der Mitte des Spielers"""
         bullet_x = self.x + self.width // 2 - 2
         bullet_y = self.y
         return Bullet(bullet_x, bullet_y)
@@ -65,24 +61,19 @@ class Bullet:
         self.color = YELLOW
 
     def update(self):
-        """Bewegung des Schusses nach oben"""
         self.y -= self.speed
 
     def draw(self, screen):
-        """Zeichnet den Schuss auf dem Bildschirm"""
         pygame.draw.rect(screen, self.color, (self.x, self.y, self.width, self.height))
     
     def is_off_screen(self):
-        """Prüft, ob der Schuss den Bildschirm verlassen hat"""
         return self.y + self.height < 0
     
     def get_rect(self):
-        """Gibt das Rechteck des Schusses für Kollisionserkennung zurück"""
         return pygame.Rect(self.x, self.y, self.width, self.height)
 
 
 class Alien:
-    """Ein einfacher Alien mit horizontaler Bewegung"""
     def __init__(self, x, y, width=40, height=30, color=GREEN, speed=2):
         self.x = x
         self.y = y
@@ -90,32 +81,48 @@ class Alien:
         self.height = height
         self.color = color
         self.speed = speed
-        self.direction = 1  
+        self.direction = 1
 
     def update(self):
-        """Bewegt den Alien horizontal"""
         self.x += self.speed * self.direction
 
     def draw(self, screen):
-        """Zeichnet den Alien auf dem Bildschirm"""
         pygame.draw.rect(screen, self.color, (self.x, self.y, self.width, self.height))
 
     def check_edges(self):
-        """Gibt True zurück, wenn der Alien eine Bildschirmkante erreicht hat"""
         return self.x + self.width >= SCREEN_WIDTH or self.x <= 0
 
     def drop_down(self, pixels=20):
-        """Lässt den Alien absinken und kehrt die Richtung um"""
         self.y += pixels
         self.direction *= -1
     
     def get_rect(self):
-        """Gibt das Rechteck des Aliens für Kollisionserkennung zurück"""
+        return pygame.Rect(self.x, self.y, self.width, self.height)
+
+
+class AlienBullet:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+        self.width = 3
+        self.height = 10
+        self.speed = 5
+        self.color = RED
+
+    def update(self):
+        self.y += self.speed
+
+    def draw(self, screen):
+        pygame.draw.rect(screen, self.color, (self.x, self.y, self.width, self.height))
+    
+    def is_off_screen(self):
+        return self.y > SCREEN_HEIGHT
+    
+    def get_rect(self):
         return pygame.Rect(self.x, self.y, self.width, self.height)
 
 
 def create_alien_fleet(rows, cols, start_x, start_y, h_spacing, v_spacing):
-    """Erzeugt eine Liste mit einer Matrix von Aliens"""
     aliens = []
     for r in range(rows):
         for c in range(cols):
@@ -126,37 +133,29 @@ def create_alien_fleet(rows, cols, start_x, start_y, h_spacing, v_spacing):
 
 
 class HUD:
-    """Head-Up Display für Punktzahl und Leben"""
     def __init__(self, font, color=WHITE):
         self.font = font
         self.color = color
     
     def draw_score(self, screen, score, x=10, y=10):
-        """Zeigt die aktuelle Punktzahl an"""
         score_text = self.font.render(f"Score: {score}", True, self.color)
         screen.blit(score_text, (x, y))
     
     def draw_lives(self, screen, lives, x=650, y=10):
-        """Zeigt die verbleibenden Leben an"""
         lives_text = self.font.render(f"Lives: {lives}", True, self.color)
         screen.blit(lives_text, (x, y))
     
     def draw(self, screen, score, lives):
-        """Zeichnet das komplette HUD am oberen Bildschirmrand"""
         self.draw_score(screen, score)
         self.draw_lives(screen, lives)
 
 
-# Liste für alle Schüsse
 bullets = []
-
-# Erstelle Alien-Fleet (3 Reihen, 8 Spalten)
+alien_bullets = []
 aliens = create_alien_fleet(rows=3, cols=8, start_x=50, start_y=50, h_spacing=80, v_spacing=60)
-
-# Punktesystem
 score = 0
-
-# HUD initialisieren
+alien_shoot_timer = 0
+alien_shoot_cooldown = 60
 hud = HUD(font)
 
 player_width = 50
@@ -179,17 +178,13 @@ while running:
                 bullet = player.shoot()
                 bullets.append(bullet)
     
-    
     keys = pygame.key.get_pressed()
     player.move(keys)
     
-   
     for bullet in bullets:
         bullet.update()
     
-    
     bullets = [bullet for bullet in bullets if not bullet.is_off_screen()]
-    
     
     edge_hit = False
     for alien in aliens:
@@ -197,43 +192,47 @@ while running:
         if alien.check_edges():
             edge_hit = True
     
-   
     if edge_hit:
         for alien in aliens:
             alien.drop_down()
     
-  
+    if len(aliens) > 0:
+        alien_shoot_timer += 1
+        if alien_shoot_timer >= alien_shoot_cooldown:
+            shooting_alien = random.choice(aliens)
+            bullet_x = shooting_alien.x + shooting_alien.width // 2 - 1
+            bullet_y = shooting_alien.y + shooting_alien.height
+            alien_bullets.append(AlienBullet(bullet_x, bullet_y))
+            alien_shoot_timer = 0
     
-    # Kollisionserkennung zwischen Bullets und Aliens
+    for alien_bullet in alien_bullets:
+        alien_bullet.update()
+    
+    alien_bullets = [ab for ab in alien_bullets if not ab.is_off_screen()]
+
     for bullet in bullets[:]:
         for alien in aliens[:]:
             if bullet.get_rect().colliderect(alien.get_rect()):
-                # Alien entfernen
                 aliens.remove(alien)
-                # Schuss entfernen
                 bullets.remove(bullet)
-                # Punkte erhöhen
                 score += 10
                 break
       
-    SCREEN.fill(BLACK) 
-
-   
+    SCREEN.fill(BLACK)
     player.draw(SCREEN)
-    
     
     for bullet in bullets:
         bullet.draw(SCREEN)
 
-    
     for alien in aliens:
         alien.draw(SCREEN)
     
-    # HUD anzeigen (Punkte und Leben)
+    for alien_bullet in alien_bullets:
+        alien_bullet.draw(SCREEN)
+    
     hud.draw(SCREEN, score, player.lives)
 
     pygame.display.flip()
-
     clock.tick(FPS)
 
 pygame.quit()
