@@ -65,8 +65,8 @@ Ich werde einen simplen "Space Invaders"-Klon mit Pygame entwickeln. Das ist ein
     * *Arbeitspakete:*
         - [x]  Implementierung zufälliger Alien-Schüsse.
         - [x]  Bewegung der Alien-Schüsse nach unten.
-        - [ ]  Kollisionserkennung zwischen Alien-Schüssen und Spieler.
-        - [ ]  Reduzierung der Spieler-Leben bei Treffer.
+        - [x]  Kollisionserkennung zwischen Alien-Schüssen und Spieler.
+        - [x]  Reduzierung der Spieler-Leben bei Treffer.
 
 
 #### Epic 7: Spielende und Neustart

@@ -19,6 +19,7 @@ clock = pygame.time.Clock()
 FPS = 60
 
 font = pygame.font.Font(None, 36)
+large_font = pygame.font.Font(None, 72)
 
 
 class Player:
@@ -30,6 +31,8 @@ class Player:
         self.speed = speed
         self.color = color
         self.lives = lives
+        self.invincible = False
+        self.invincible_timer = 0
     
     def move(self, keys):
         if keys[pygame.K_LEFT] or keys[pygame.K_a]:
@@ -43,12 +46,29 @@ class Player:
             self.x = SCREEN_WIDTH - self.width
     
     def draw(self, screen):
+        if self.invincible and self.invincible_timer % 10 < 5:
+            return
         pygame.draw.rect(screen, self.color, (self.x, self.y, self.width, self.height))
     
     def shoot(self):
         bullet_x = self.x + self.width // 2 - 2
         bullet_y = self.y
         return Bullet(bullet_x, bullet_y)
+    
+    def get_rect(self):
+        return pygame.Rect(self.x, self.y, self.width, self.height)
+    
+    def take_damage(self):
+        if not self.invincible:
+            self.lives -= 1
+            self.invincible = True
+            self.invincible_timer = 120
+    
+    def update(self):
+        if self.invincible:
+            self.invincible_timer -= 1
+            if self.invincible_timer <= 0:
+                self.invincible = False
 
 
 class Bullet:
@@ -150,21 +170,48 @@ class HUD:
         self.draw_lives(screen, lives)
 
 
-bullets = []
-alien_bullets = []
-aliens = create_alien_fleet(rows=3, cols=8, start_x=50, start_y=50, h_spacing=80, v_spacing=60)
-score = 0
-alien_shoot_timer = 0
+def reset_game():
+    bullets = []
+    alien_bullets = []
+    aliens = create_alien_fleet(rows=3, cols=8, start_x=50, start_y=50, h_spacing=80, v_spacing=60)
+    score = 0
+    alien_shoot_timer = 0
+    
+    player_width = 50
+    player_height = 40
+    player_speed = 5
+    player_x = (SCREEN_WIDTH / 2) - (player_width / 2)
+    player_y = SCREEN_HEIGHT - player_height - 10
+    player = Player(player_x, player_y, player_width, player_height, player_speed, RED)
+    
+    return bullets, alien_bullets, aliens, score, alien_shoot_timer, player
+
+
+def draw_game_over(screen, score):
+    game_over_text = large_font.render("GAME OVER", True, RED)
+    score_text = font.render(f"Final Score: {score}", True, WHITE)
+    restart_text = font.render("Press R to Restart or Q to Quit", True, WHITE)
+    
+    screen.blit(game_over_text, (SCREEN_WIDTH // 2 - game_over_text.get_width() // 2, SCREEN_HEIGHT // 2 - 100))
+    screen.blit(score_text, (SCREEN_WIDTH // 2 - score_text.get_width() // 2, SCREEN_HEIGHT // 2))
+    screen.blit(restart_text, (SCREEN_WIDTH // 2 - restart_text.get_width() // 2, SCREEN_HEIGHT // 2 + 50))
+
+
+def draw_victory(screen, score):
+    victory_text = large_font.render("VICTORY!", True, GREEN)
+    score_text = font.render(f"Final Score: {score}", True, WHITE)
+    restart_text = font.render("Press R to Restart or Q to Quit", True, WHITE)
+    
+    screen.blit(victory_text, (SCREEN_WIDTH // 2 - victory_text.get_width() // 2, SCREEN_HEIGHT // 2 - 100))
+    screen.blit(score_text, (SCREEN_WIDTH // 2 - score_text.get_width() // 2, SCREEN_HEIGHT // 2))
+    screen.blit(restart_text, (SCREEN_WIDTH // 2 - restart_text.get_width() // 2, SCREEN_HEIGHT // 2 + 50))
+
+
+bullets, alien_bullets, aliens, score, alien_shoot_timer, player = reset_game()
 alien_shoot_cooldown = 60
 hud = HUD(font)
-
-player_width = 50
-player_height = 40
-player_speed = 5
-player_x = (SCREEN_WIDTH / 2) - (player_width / 2)
-player_y = SCREEN_HEIGHT - player_height - 10
-
-player = Player(player_x, player_y, player_width, player_height, player_speed, RED)
+game_over = False
+victory = False
 
 running = True
 while running:
@@ -174,63 +221,94 @@ while running:
             running = False
         
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_SPACE:
-                bullet = player.shoot()
-                bullets.append(bullet)
+            if game_over or victory:
+                if event.key == pygame.K_r:
+                    bullets, alien_bullets, aliens, score, alien_shoot_timer, player = reset_game()
+                    game_over = False
+                    victory = False
+                elif event.key == pygame.K_q:
+                    running = False
+            else:
+                if event.key == pygame.K_SPACE:
+                    bullet = player.shoot()
+                    bullets.append(bullet)
     
-    keys = pygame.key.get_pressed()
-    player.move(keys)
-    
-    for bullet in bullets:
-        bullet.update()
-    
-    bullets = [bullet for bullet in bullets if not bullet.is_off_screen()]
-    
-    edge_hit = False
-    for alien in aliens:
-        alien.update()
-        if alien.check_edges():
-            edge_hit = True
-    
-    if edge_hit:
+    if not game_over and not victory:
+        keys = pygame.key.get_pressed()
+        player.move(keys)
+        player.update()
+        
+        for bullet in bullets:
+            bullet.update()
+        
+        bullets = [bullet for bullet in bullets if not bullet.is_off_screen()]
+        
+        edge_hit = False
         for alien in aliens:
-            alien.drop_down()
-    
-    if len(aliens) > 0:
-        alien_shoot_timer += 1
-        if alien_shoot_timer >= alien_shoot_cooldown:
-            shooting_alien = random.choice(aliens)
-            bullet_x = shooting_alien.x + shooting_alien.width // 2 - 1
-            bullet_y = shooting_alien.y + shooting_alien.height
-            alien_bullets.append(AlienBullet(bullet_x, bullet_y))
-            alien_shoot_timer = 0
-    
-    for alien_bullet in alien_bullets:
-        alien_bullet.update()
-    
-    alien_bullets = [ab for ab in alien_bullets if not ab.is_off_screen()]
+            alien.update()
+            if alien.check_edges():
+                edge_hit = True
+        
+        if edge_hit:
+            for alien in aliens:
+                alien.drop_down()
+        
+        if len(aliens) > 0:
+            alien_shoot_timer += 1
+            if alien_shoot_timer >= alien_shoot_cooldown:
+                shooting_alien = random.choice(aliens)
+                bullet_x = shooting_alien.x + shooting_alien.width // 2 - 1
+                bullet_y = shooting_alien.y + shooting_alien.height
+                alien_bullets.append(AlienBullet(bullet_x, bullet_y))
+                alien_shoot_timer = 0
+        
+        for alien_bullet in alien_bullets:
+            alien_bullet.update()
+        
+        alien_bullets = [ab for ab in alien_bullets if not ab.is_off_screen()]
 
-    for bullet in bullets[:]:
-        for alien in aliens[:]:
-            if bullet.get_rect().colliderect(alien.get_rect()):
-                aliens.remove(alien)
-                bullets.remove(bullet)
-                score += 10
-                break
+        for bullet in bullets[:]:
+            for alien in aliens[:]:
+                if bullet.get_rect().colliderect(alien.get_rect()):
+                    aliens.remove(alien)
+                    bullets.remove(bullet)
+                    score += 10
+                    break
+        
+        for alien_bullet in alien_bullets[:]:
+            if alien_bullet.get_rect().colliderect(player.get_rect()):
+                alien_bullets.remove(alien_bullet)
+                player.take_damage()
+        
+        for alien in aliens:
+            if alien.y + alien.height >= player.y:
+                game_over = True
+        
+        if player.lives <= 0:
+            game_over = True
+        
+        if len(aliens) == 0:
+            victory = True
       
     SCREEN.fill(BLACK)
-    player.draw(SCREEN)
     
-    for bullet in bullets:
-        bullet.draw(SCREEN)
+    if game_over:
+        draw_game_over(SCREEN, score)
+    elif victory:
+        draw_victory(SCREEN, score)
+    else:
+        player.draw(SCREEN)
+        
+        for bullet in bullets:
+            bullet.draw(SCREEN)
 
-    for alien in aliens:
-        alien.draw(SCREEN)
-    
-    for alien_bullet in alien_bullets:
-        alien_bullet.draw(SCREEN)
-    
-    hud.draw(SCREEN, score, player.lives)
+        for alien in aliens:
+            alien.draw(SCREEN)
+        
+        for alien_bullet in alien_bullets:
+            alien_bullet.draw(SCREEN)
+        
+        hud.draw(SCREEN, score, player.lives)
 
     pygame.display.flip()
     clock.tick(FPS)
