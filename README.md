@@ -63,8 +63,8 @@ Ich werde einen simplen "Space Invaders"-Klon mit Pygame entwickeln. Das ist ein
 #### Epic 6: Alien-Gegenangriff
 * Als System sollen die Aliens ebenfalls Schüsse abgeben und diese treffen mich, damit ich eine Herausforderung habe und Leben verlieren kann.
     * *Arbeitspakete:*
-        - [ ]  Implementierung zufälliger Alien-Schüsse.
-        - [ ]  Bewegung der Alien-Schüsse nach unten.
+        - [x]  Implementierung zufälliger Alien-Schüsse.
+        - [x]  Bewegung der Alien-Schüsse nach unten.
         - [ ]  Kollisionserkennung zwischen Alien-Schüssen und Spieler.
         - [ ]  Reduzierung der Spieler-Leben bei Treffer.
 
